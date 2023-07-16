@@ -1,0 +1,5 @@
+---
+db_user: maulana
+db_password: sociodbmilosaurus
+db_name: sociodb
+db_port: 5432

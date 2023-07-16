@@ -1,0 +1,86 @@
+---
+- hosts: psql
+  name: "PostgreSQL"
+  become: true
+  become_user: root
+
+  vars_files:
+    - vars.yml
+
+  pre_tasks:
+    # - name: "Update all packages to their latest version"
+    #   ansible.builtin.apt:
+    #     update_cache: true
+    #     only_upgrade: true
+
+    # - name: Install postgresql
+    #   ansible.builtin.apt:
+    #     name: postgresql
+    #     state: fixed
+
+    # - name: Install python3-pip
+    #   ansible.builtin.apt:
+    #     name: python3-pip
+    #     state: fixed
+
+    - name: Install Python packages
+      ansible.builtin.pip:
+        name:
+          - psycopg2-binary
+        virtualenv: /opt/venv
+
+  # tasks:
+  #   - name: "Find out if PostgreSQL is initialized"
+  #     ansible.builtin.stat:
+  #       path: "/var/lib/pgsql/data/pg_hba.conf"
+  #     register: postgres_data
+
+    # - name: Create a new database with name {{ db_name }}
+    #   community.postgresql.postgresql_db:
+    #     name: "{{ db_name }}"
+    #     state: present
+    #     conn_limit: 50
+    #   become: true
+    #   become_user: postgres
+
+    # - name: Connect to database, create user {{ db_user }}
+    #   community.postgresql.postgresql_user:
+    #     db: "{{ db_name }}"
+    #     name: "{{ db_user }}"
+    #     password: ceec4eif7ya
+    #   become: true
+    #   become_user: postgres
+
+    # - name: Grant privs to on database {{ db_name }}
+    #   community.postgresql.postgresql_privs:
+    #     database: "{{ db_name }}"
+    #     state: present
+    #     privs: all
+    #     type: table
+    #     objs: table
+    #     schema: public
+    #     roles: "{{ db_user }}"
+    #     grant_option: true
+    #   become: true
+    #   become_user: postgres
+
+  #   - name: Allow md5 connection for the db user
+  #     community.postgresql.postgresql_pg_hba:
+  #       dest: "/etc/postgresql/14/main/pg_hba.conf"
+  #       contype: host
+  #       databases: all
+  #       source: all
+  #       method: md5
+  #       users: "{{ db_user }}"
+  #       create: true
+  #       state: present
+  #     become: true
+  #     become_user: postgres
+  #     notify: Restart service
+
+
+  # handlers:
+  #   - name: Restart service
+  #     ansible.builtin.service:
+  #       name: postgresql
+  #       state: restarted

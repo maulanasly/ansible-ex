@@ -1,0 +1,91 @@
+---
+- hosts: psql
+  name: "PostgreSQL"
+  become: true
+  become_user: root
+
+  vars_files:
+    - vars.yml
+
+  tasks:
+    # - name: Simple select query to {{ db_name }}
+    #   community.postgresql.postgresql_query:
+    #     db: "{{ db_name }}"
+    #     login_user: "{{ db_user }}"
+    #     login_password: "{{ db_password }}"
+    #     query: SELECT version()
+    #     login_port: "{{ db_port }}"
+    #   register: result
+    #   become: true
+    #   become_user: "{{ db_user }}"
+
+    - name: Simple select query to data-broker
+      community.postgresql.postgresql_query:
+        db: "data-broker"
+        login_user: "data_broker"
+        login_password: "HEky4wToEyef"
+        login_host: "172.31.9.103"
+        query: >
+          SELECT * FROM public.access_token
+          LIMIT 1;
+        login_port: 5432
+      register: result
+      timeout: 60
+      # become: true
+      # become_user: "maulana"
+
+    # - name: Create table on {{ db_name }}
+    #   community.postgresql.postgresql_query:
+    #     db: "{{ db_name }}"
+    #     login_user: "{{ db_user }}"
+    #     login_password: "{{ db_password }}"
+    #     query: >
+    #       CREATE TABLE IF NOT EXISTS test_table (
+    #         id serial PRIMARY KEY,
+    #         name VARCHAR (50) UNIQUE NOT NULL,
+    #         age smallint
+    #       );
+    #     login_port: "{{ db_port }}"
+    #   register: result
+    #   become: true
+    #   become_user: "{{ db_user }}"
+
+    # - name: Insert query to test_table in db {{ db_name }}
+    #   community.postgresql.postgresql_query:
+    #     db: "{{ db_name }}"
+    #     login_user: "{{ db_user }}"
+    #     login_password: "{{ db_password }}"
+    #     login_port: "{{ db_port }}"
+    #     query: >
+    #       INSERT INTO test_table (name, age)
+    #       VALUES ('John', 25),
+    #              ('Jane', 30),
+    #              ('Joe', 35) on duplicate key ignore;
+    #   become: true
+    #   become_user: "{{ db_user }}"
+
+    - name: Drop view on {{ db_name }}
+      community.postgresql.postgresql_query:
+        db: "data-broker"
+        login_user: "data_broker"
+        login_password: "HEky4wToEyef"
+        login_host: "172.31.9.103"
+        query: "DROP VIEW IF EXISTS test_view;"
+      register: result
+      become: true
+      become_user: "{{ db_user }}"
+
+    - name: Create view on {{ db_name }}
+      community.postgresql.postgresql_query:
+        db: "data-broker"
+        login_user: "data_broker"
+        login_password: "HEky4wToEyef"
+        login_host: "172.31.9.103"
+        query: >
+          CREATE VIEW test_view AS
+          SELECT * FROM public.access_token;
+
+        file_path: "{{ playbook_dir }}"
+      register: result
+      become: true
+      become_user: "{{ db_user }}"
